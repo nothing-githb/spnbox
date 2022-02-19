@@ -13,6 +13,7 @@
 #include <types.h>
 #include <spnbox.h>
 #include <sbox.h>
+#include <tableMng.h>
 
 #define OUTER_DEBUG 0
 #define SBC_DEBUG 0
@@ -109,7 +110,7 @@ void linear(uint16_t* input, uint16_t*  matrix[8][8])
 void small_block_cipher(uint8_t* in, uint8_t* key)
 {
     int i = 0, j = 0, key_index = 0;
-
+    printf("%d --> ", *((uint16_t*)in));
     for(i = NUM_OF_BYTES-1; i >= 0; i--)
     {
         if (SBC_DEBUG)
@@ -139,10 +140,11 @@ void small_block_cipher(uint8_t* in, uint8_t* key)
         }
         if (SBC_DEBUG) printf("-----------------------------------\n");
     }
+    printf("%d\n", *((uint16_t*)in));
 
 }
 
-/*******************   (inv)nonlinear layer of SPNBOX16  ****************************/
+/*******************     nonlinear layer of SPNBOX16     **********************/
 static void nonlinear(uint16_t* input, uint8_t* extended_key)
 {
     if (SBC_DEBUG) printf("Small Block Cipher\n\n");
@@ -150,6 +152,15 @@ static void nonlinear(uint16_t* input, uint8_t* extended_key)
     for(int j = 0; j < T; j++)
         small_block_cipher(input+j, extended_key);
 }
+
+static void nonlinear_wb(uint16_t* input)
+{
+    if (SBC_DEBUG) printf("Small Block Cipher\n\n");
+
+    for(int j = 0; j < T; j++)
+        *(input+j) = lookup_table[*(input+j)];
+}
+/*******************     nonlinear layer of SPNBOX16     **********************/
 
 void encrypt_bb_16(uint16_t* plain_text, uint8_t* extended_key)
 {
@@ -176,6 +187,30 @@ void encrypt_bb_16(uint16_t* plain_text, uint8_t* extended_key)
     }
 }
 
+void encrypt_wb_16(uint16_t* plain_text)
+{
+    for (int r = 0; r < ROUND; r++)
+    {
+        if (OUTER_DEBUG) printf("OUTER round %d\n", r);
+
+        /**  nonlinear layer  **/
+        nonlinear_wb(plain_text);
+
+        if (OUTER_DEBUG) printf("Mix Columns Outer\n\n");
+
+        /**  linear layer  **/
+        linear(plain_text, omtrx);
+
+        if (OUTER_DEBUG) printf("Add Round Constant\n\n");
+
+        /**  affine layer  **/
+        for(int j = 0; j < T; j++)
+        {
+            if (OUTER_DEBUG) printf("RC: %d ^ %d = %d\n", *(plain_text+j), r * T + j + 1, *(plain_text+j) ^ (r * T + j + 1));
+            *(plain_text+j) ^= r * T + j + 1;
+        }
+    }
+}
 
 #endif
 

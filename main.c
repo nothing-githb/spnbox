@@ -33,6 +33,21 @@
 #define STR_IMPL_(x) #x      //stringify argument
 #define STR(x) STR_IMPL_(x)
 
+#if defined(__x86_64__)
+#ifdef __GNUC__
+#include <x86intrin.h>
+#endif
+#ifdef _MSC_VER_
+#include <intrin.h>
+#endif
+#pragma intrinsic(__rdtsc)
+
+uint64_t get_rdtsc()
+{
+    return __rdtsc();
+}
+#endif
+
 int main()
 {
     INIT_SODIUM;
@@ -46,7 +61,8 @@ int main()
     memset(ip, 0x01, 16);
     memset(out, 0x01, 16);
 
-    clock_t start = 0, end = 0;
+    uint64_t start = 0, end = 0;
+
     double cpu_time_used;
 
     int i = 0;
@@ -55,9 +71,9 @@ int main()
 
     uint8_t master_key[crypto_kdf_KEYBYTES] = "0112233445566778";
 
-    //generate_lookuptable(&master_key);
+    generate_lookuptable(&master_key);
 
-    //get_looktable_fromfile();
+    get_looktable_fromfile();
 
     //uint8_t extended_key[SIZE_OF_KEY];
     uint8_t extended_key[66] = "01234567861123456789012345678901234567890123456789012345678901234";
@@ -70,25 +86,57 @@ int main()
 
     printBytes("input", input, 16);
 
+#if defined(__x86_64__)
+    start = get_rdtsc;
+#else
     start = clock();
+#endif
 
     while(i++ < TEST_COUNT)
     {
-        //encrypt_wb_16(input);
 #if N_IN == 8
+
+#if WB_TEST == 1
+        encrypt_wb_8(input);
+#else
         encrypt_bb_8(input, extended_key);
+#endif
+
 #elif N_IN == 16
+
+#if WB_TEST == 1
+        encrypt_wb_16(input);
+#else
         encrypt_bb_16(input, extended_key);
+#endif
+
 #elif N_IN == 24
+
+#if WB_TEST == 1
+        encrypt_wb_24(input);
+#else
         encrypt_bb_24(input, extended_key);
+#endif
+
 #elif N_IN == 32
+
+#if WB_TEST == 1
+        encrypt_bb_32(input);
+#else
         encrypt_bb_32(input, extended_key);
+#endif
+
 #endif
     }
 
+#if defined(__x86_64__)
+    end = get_rdtsc;
+#else
     end = clock();
+#endif
+    printBytes("output", input, 16);
 
-    printf("%lu - %lu\n", start, end);
+    printf("start : %llu \nend : %llu \ndiff : %llu\n", start, end, end - start);
 
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
 
@@ -105,58 +153,15 @@ int main()
 
     end = clock();
 
-    printf("%lu - %lu\n", start, end);
+    printf("start : %llu \nend : %llu \ndiff : %llu\n", start, end, end - start);
 
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
 
     printf("Cpu time used : %f\n\n", cpu_time_used);
 
-    printBytes("output", input, 16);
 
     //printf("%d %u\n", 17982 == MUL(GET_TABLE(SPN(N_IN).omtrx, 0, 3, uint16_t), 5286, uint16_t), MUL(GET_TABLE(SPN(N_IN).omtrx, 0, 3, uint16_t), 5286, uint16_t));
     //printf("%d %u\n", 12060 == MUL(GET_TABLE(SPN(N_IN).omtrx, 0, 4, uint16_t), 3450, uint16_t), MUL(GET_TABLE(SPN(N_IN).omtrx, 0, 4, uint16_t), 3450, uint16_t));
-
-
-    uint8x16_t p_text;
-    p_text=vld1q_u8(input);
-
-#ifdef __aarch64__
-    printf("__aarch64__\n");
-#endif
-
-
-    double sum = 0;
-    double add = 1;
-    // Start measuring time
-    struct timespec begin, end2;
-    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &begin);
-
-    int iterations = 1000*1000*1000;
-    for (int i=0; i<iterations; i++) {
-        sum += add;
-        add /= 2.0;
-    }
-
-    // Stop measuring time and calculate the elapsed time
-    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end2);
-    long seconds = end2.tv_sec - begin.tv_sec;
-    long nanoseconds = end2.tv_nsec - begin.tv_nsec;
-    double elapsed = seconds + nanoseconds*1e-9;
-
-    printf("Result: %.20f\n", sum);
-
-    printf("Time measured: %.3f seconds.\n", elapsed);
-
-    unsigned long long elapsed2 = seconds*1000000000 + nanoseconds;
-
-    printf("Result: %.20f\n", sum);
-
-    int *STCSR = (int *)0xE000E010;
-    int *STRVR = (int *)0xE000E014;
-    int *STCVR = (int *)0xE000E018;
-
-    printf("Time measured: %llu seconds.%d\n", elapsed2,  *STCVR - *STCVR - 2);
-
 
     return 0;
 }

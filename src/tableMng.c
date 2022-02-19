@@ -13,9 +13,24 @@
 #include <sodium.h>
 #include <tableMng.h>
 
-static const char* filename = "lookuptable.txt";
 
-uint16_t lookup_table[1<<N_IN];
+
+
+#if 8 == N_IN
+typedef uint8_t uint_in_t;
+static const char* filename = "lookuptable8.txt";
+#elif 16 == N_IN
+typedef uint16_t uint_in_t;
+static const char* filename = "lookuptable16.txt";
+#elif 24 == N_IN
+typedef uint32_t uint_in_t;
+static const char* filename = "lookuptable24.txt";
+#elif 32 == N_IN
+typedef uint32_t uint_in_t;
+static const char* filename = "lookuptable32.txt";
+#endif
+
+uint_in_t lookup_table[1<<N_IN];
 
 void get_looktable_fromfile()
 {
@@ -99,7 +114,7 @@ void generate_lookuptable(uint8_t* master_key)
     uint8_t  input[NUM_OF_BYTES];
     uint8_t  output[NUM_OF_BYTES];
 
-    uint8_t  extended_key[SIZE_OF_KEY];
+    uint8_t extended_key[66] = "01234567861123456789012345678901234567890123456789012345678901234";
     FILE*    output_file = NULL;
 
     printf("Table generation\n");
@@ -107,7 +122,7 @@ void generate_lookuptable(uint8_t* master_key)
     memset(input, 0x00, NUM_OF_BYTES);
     memset(output, 0x00, NUM_OF_BYTES);
 
-    key_schedule(master_key, &extended_key);
+    //key_schedule(master_key, &extended_key);
 
     output_file = fopen(filename, "wb+");
 
@@ -125,7 +140,7 @@ void generate_lookuptable(uint8_t* master_key)
 
         fwrite(input, NUM_OF_BYTES, 1, output_file);
         increment_bytes(output, NUM_OF_BYTES, 1);
-        memcpy(input, output, 2);
+        memcpy(input, output, NUM_OF_BYTES);
     }
 
     fclose(output_file);

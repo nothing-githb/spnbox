@@ -11,10 +11,14 @@
 #define N_IN                16
 #define NUM_OF_BYTES        (N_IN/8)
 
+#define WB_TEST             1
+
 #define SBC_DEBUG           0
 #define MC_DEBUG            0
 #define KC_DEBUG            0
 #define OUTER_DEBUG         0
 #define LT_DEBUG            0
+
+
 
 #endif //SPNBOX_CONFIG_H

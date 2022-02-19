@@ -12,6 +12,7 @@
 #include <types.h>
 #include <spnbox.h>
 #include <sbox.h>
+#include <tableMng.h>
 
 #define OUTER_DEBUG 0
 #define SBC_DEBUG 0
@@ -137,6 +138,15 @@ static void nonlinear(uint8_t* input, uint8_t* extended_key)
         small_block_cipher(input+j, extended_key);
 }
 
+static void nonlinear_wb(uint8_t* input)
+{
+    if (SBC_DEBUG) printf("Small Block Cipher\n\n");
+
+    for(int j = 0; j < T; j++)
+        *(input+j) = lookup_table[*(input+j)];
+}
+/*******************     nonlinear layer of SPNBOX16     **********************/
+
 void encrypt_bb_8(uint8_t* plain_text, uint8_t* extended_key)
 {
     for (int r = 0; r < ROUND; r++)
@@ -169,7 +179,7 @@ void encrypt_wb_8(uint8_t* plain_text)
         if (OUTER_DEBUG) printf("OUTER round %d\n", r);
 
         /**  nonlinear layer  **/
-        nonlinear(plain_text, extended_key);
+        nonlinear_wb(plain_text);
 
         if (OUTER_DEBUG) printf("Mix Columns Outer\n\n");
 

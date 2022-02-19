@@ -15,6 +15,7 @@
 #include <types.h>
 #include <spnbox.h>
 #include <sbox.h>
+#include <tableMng.h>
 
 #define BIT24 (0x00111111)
 
@@ -88,7 +89,7 @@ void linear(uint32_t* input, uint32_t*  matrix[SIZE_OF_MATRIX][SIZE_OF_MATRIX])
             tmp_value = (MUL(GET_TABLE(matrix, i, j, uint32_t), (BIT24 & (*(input + j))), uint32_t));
             if (MC_DEBUG)
                 printf("%u * %d = %u\n", (BIT24 & (*(input + j))), outer_table[i][j], tmp_value);
-            new_values[i] ^= (BIT24 & (*tmp_value));
+            new_values[i] ^= (BIT24 & (tmp_value));
         }
 
         if (MC_DEBUG)
@@ -141,7 +142,7 @@ void small_block_cipher(uint8_t* in, uint8_t* key)
 
 }
 
-/*******************   (inv)nonlinear layer of SPNBOX16  ****************************/
+/*******************   (inv)nonlinear layer of SPNBOX24  **********************/
 static void nonlinear(uint8_t* input, uint8_t* extended_key)
 {
     if (SBC_DEBUG) printf("Small Block Cipher\n\n");
@@ -149,6 +150,15 @@ static void nonlinear(uint8_t* input, uint8_t* extended_key)
     for(int j = 0; j < T; j++)
         small_block_cipher(input+j*3, extended_key);
 }
+
+static void nonlinear_wb(uint8_t* input)
+{
+    if (SBC_DEBUG) printf("Small Block Cipher\n\n");
+
+    for(int j = 0; j < T; j++)
+        *(input+j) = lookup_table[*(input+j)];
+}
+/*******************     nonlinear layer of SPNBOX24     **********************/
 
 void encrypt_bb_24(uint8_t* plain_text, uint8_t* extended_key)
 {

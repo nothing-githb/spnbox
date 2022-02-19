@@ -91,37 +91,39 @@ CMakeFiles/spnbox.dir/src/helper.c.o: \
 CMakeFiles/spnbox.dir/src/sbox.c.o: \
  ../inc/sbox.h \
  ../src/sbox.c
-CMakeFiles/spnbox.dir/src/spn16/spn16.c.o: \
+CMakeFiles/spnbox.dir/src/spn/spn16.c.o: \
  ../inc/config.h \
  ../inc/helper.h \
  ../inc/sbox.h \
  ../inc/spn/spn16.h \
  ../inc/spnbox.h \
+ ../inc/tableMng.h \
  ../inc/tables/16bit.h \
  ../inc/tables/8bit.h \
  ../inc/tables/tables.h \
  ../inc/types.h \
- ../src/spn16/spn16.c \
+ ../src/spn/spn16.c \
  /opt/homebrew/include/gmp.h \
  /opt/homebrew/opt/openssl@1.1/include/openssl/aes.h \
  /opt/homebrew/opt/openssl@1.1/include/openssl/opensslconf.h \
  /opt/homebrew/opt/openssl@1.1/include/openssl/opensslv.h
-CMakeFiles/spnbox.dir/src/spn16/spn24.c.o: \
+CMakeFiles/spnbox.dir/src/spn/spn24.c.o: \
  ../inc/config.h \
  ../inc/helper.h \
  ../inc/sbox.h \
  ../inc/spn/spn24.h \
  ../inc/spnbox.h \
+ ../inc/tableMng.h \
  ../inc/tables/24bit.h \
  ../inc/tables/8bit.h \
  ../inc/tables/tables.h \
  ../inc/types.h \
- ../src/spn16/spn24.c \
+ ../src/spn/spn24.c \
  /opt/homebrew/include/gmp.h \
  /opt/homebrew/opt/openssl@1.1/include/openssl/aes.h \
  /opt/homebrew/opt/openssl@1.1/include/openssl/opensslconf.h \
  /opt/homebrew/opt/openssl@1.1/include/openssl/opensslv.h
-CMakeFiles/spnbox.dir/src/spn16/spn32.c.o: \
+CMakeFiles/spnbox.dir/src/spn/spn32.c.o: \
  ../inc/config.h \
  ../inc/helper.h \
  ../inc/sbox.h \
@@ -130,21 +132,22 @@ CMakeFiles/spnbox.dir/src/spn16/spn32.c.o: \
  ../inc/tables/8bit.h \
  ../inc/tables/tables.h \
  ../inc/types.h \
- ../src/spn16/spn32.c \
+ ../src/spn/spn32.c \
  /opt/homebrew/include/gmp.h \
  /opt/homebrew/opt/openssl@1.1/include/openssl/aes.h \
  /opt/homebrew/opt/openssl@1.1/include/openssl/opensslconf.h \
  /opt/homebrew/opt/openssl@1.1/include/openssl/opensslv.h
-CMakeFiles/spnbox.dir/src/spn16/spn8.c.o: \
+CMakeFiles/spnbox.dir/src/spn/spn8.c.o: \
  ../inc/config.h \
  ../inc/helper.h \
  ../inc/sbox.h \
  ../inc/spn/spn8.h \
  ../inc/spnbox.h \
+ ../inc/tableMng.h \
  ../inc/tables/8bit.h \
  ../inc/tables/tables.h \
  ../inc/types.h \
- ../src/spn16/spn8.c \
+ ../src/spn/spn8.c \
  /opt/homebrew/include/gmp.h \
  /opt/homebrew/opt/openssl@1.1/include/openssl/aes.h \
  /opt/homebrew/opt/openssl@1.1/include/openssl/opensslconf.h \
